@@ -2,8 +2,8 @@
 init:
 	pip install --upgrade pip
 	pip install -r requirements.txt
-install:
 
+install:
 	python -m pip install --upgrade pip
 	# Used for packaging and publishing
 	pip install setuptools wheel twine
@@ -31,4 +31,4 @@ lint:
 
 refactor: format lint
 
-all: install refactor test
+all: init install refactor test
