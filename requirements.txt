@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pylint
+pytest-cov
+click
+black
+requests
