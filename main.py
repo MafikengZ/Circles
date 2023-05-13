@@ -11,9 +11,7 @@ app = FastAPI()
 
 
 @app.post("/token", response_model=Token)
-async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
-):
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     """Create a timedelta with the expiration time of the token.
     Create a real JWT access token and return it"""
 
@@ -33,14 +31,11 @@ async def get_users(current_user: Annotated[User, Depends(get_current_active_use
 
 
 @app.get("/users/items/")
-async def get_user_items(
-    current_user: Annotated[User, Depends(get_current_active_user)]
-):
+async def get_user_items(current_user: Annotated[User, Depends(get_current_active_user)]):
     return [{"item_id": "Foo", "owner": current_user.username}]
 
 
-
-async def main():
+async def server():
     config = uvicorn.Config("main:app",
                             host="127.0.0.1", 
                             port=5000, 
@@ -51,4 +46,4 @@ async def main():
     await server.serve()
     
 if __name__ == "__main__":
-  asyncio.run(main())
+  asyncio.run(server())
