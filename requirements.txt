@@ -1,7 +1,11 @@
 fastapi
 uvicorn
+pydantic
 pylint
 pytest-cov
 click
 black
+flake8
 requests
+python-jose[cryptography]
+passlib[bcrypt]
