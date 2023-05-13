@@ -10,10 +10,6 @@ install:
 	pip install flake8 
 	# Used for testing 
 	pip install pytest
-	#cryptograpgy 
-	pip install python-jose[cryptography]
-	pip install passlib[bcrypt]
-	pip install black
 
 test:
 	echo "Test not Implemented yet!"

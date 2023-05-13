@@ -10,4 +10,4 @@ requests
 python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
-python-jose
+social-auth-core
