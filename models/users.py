@@ -1,7 +1,7 @@
 import uuid
 
 from pydantic import BaseModel
-from typing import Optional , Annotated, Required
+from typing import Optional, Annotated, Required
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -12,7 +12,6 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from datetime import datetime, timedelta
 
 from utility.exceptions import *
-
 
 
 UUID = uuid
@@ -39,47 +38,55 @@ db = {
 class User(BaseModel):
     employee_id = UUID.uuid1()
     username: str
-    password: str 
+    password: str
     email: str | None = None
     full_name: str | None = None
     disabled: bool | None = None
-    
+
+
 class UserInDB(User):
     hashed_password: str
-    
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
-    
+
+
 class TokenData(BaseModel):
     username: str | None = None
+
 
 async def get_user(db, username: str):
     if username in db:
         user_dict = db[username]
         return UserInDB(**user_dict)
-    
-#Hash and verify the passwords
-async def get_password_hash(password:str):
-    '''Create a utility function to hash a password coming from the user'''
+
+
+# Hash and verify the passwords
+async def get_password_hash(password: str):
+    """Create a utility function to hash a password coming from the user"""
     return pwd_context.hash(password)
 
-async def verify_password(password:str , hash_passport:str):
-    '''Verify if a received password matches the hash stored.'''
-    return pwd_context.verify(password , hash_passport)
 
-#Get user and authenticate
-async def authenticate_user(db , username:str , password:str):
-    '''authenticate and return a user.'''
-    user = get_user(db , username=username)
+async def verify_password(password: str, hash_passport: str):
+    """Verify if a received password matches the hash stored."""
+    return pwd_context.verify(password, hash_passport)
+
+
+# Get user and authenticate
+async def authenticate_user(db, username: str, password: str):
+    """authenticate and return a user."""
+    user = get_user(db, username=username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
         return False
     return user
 
+
 async def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    '''Create a utility function to generate a new access token'''
+    """Create a utility function to generate a new access token"""
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -91,10 +98,10 @@ async def create_access_token(data: dict, expires_delta: timedelta | None = None
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    '''Update get_current_user to receive the same token as before, but this time,using JWT tokens.
-        Decode the received token, verify it, and return the current user.
-        If the token is invalid, return an HTTP error right away.'''
-    
+    """Update get_current_user to receive the same token as before, but this time,using JWT tokens.
+    Decode the received token, verify it, and return the current user.
+    If the token is invalid, return an HTTP error right away."""
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
@@ -107,3 +114,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     if user is None:
         raise credentials_exception
     return user
+
+
+async def get_current_active_user(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    if current_user.disabled:
+        raise user_not_found
+    return current_user

@@ -9,3 +9,5 @@ flake8
 requests
 python-jose[cryptography]
 passlib[bcrypt]
+python-multipart
+python-jose

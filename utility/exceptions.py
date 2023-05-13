@@ -11,3 +11,5 @@ invalid_credentials = HTTPException(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+user_not_found = HTTPException(status_code=400, detail="Inactive user")

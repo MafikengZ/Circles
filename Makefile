@@ -1,27 +1,29 @@
 
 init:
-	pip install --upgrade pip
+	C:\Users\SelloMaf\Desktop\Devops\circles\.venv\Scripts\python.exe -m pip install --upgrade pip
 	pip install -r requirements.txt
 
 install:
-	python -m pip install --upgrade pip
-	# Used for packaging and publishing
-	pip install setuptools wheel twine
-	# Used for linting
-	pip install flake8
-	# Used for testing
+	#Used for packaging and publishing
+	#pip install setuptools wheel twine
+	#Used for linting
+	pip install flake8 
+	# Used for testing 
 	pip install pytest
+	#cryptograpgy 
+	pip install "python-jose[cryptography]" \
+	pip install "passlib[bcrypt]" \
 
 test:
 	echo "Test not Implemented yet!"
 	#python3 -m pytest -vv tests/*.py
 
 format:
-	black *.py loggins/*.py
-	black *.py models/*.py
-	black *.py routes/*.py
-	black *.py schema/*.py
-	black *.py tests/*.py
+	black *.py loggins/*.py \
+	black *.py models/*.py \ 
+	black *.py routes/*.py \
+	black *.py schema/*.py \
+	black *.py tests/*.py \
 
 lint:
 	# stop the build if there are Python syntax errors or undefined names
@@ -30,5 +32,7 @@ lint:
 	flake8 src --count --exit-zero --statistics
 
 refactor: format lint
+
+server: uvicorn main:app --reload --port 8080
 
 all: init install refactor test
