@@ -6,12 +6,12 @@ from typing import Optional, Annotated, Required
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
 
 from datetime import datetime, timedelta
-
 from utility.exceptions import *
+from schema.db import *
 
 
 UUID = uuid
@@ -24,19 +24,9 @@ SECRET_KEY = "d556c6142436e109b7ca0e6e77414a635cdf52249c14395342ddf683e6eb43f0"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 
-db = {
-    "AyraStark": {
-        "username": "Ayra",
-        "full_name": "Ayra Stark",
-        "email": "ayra.stark@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
-
 
 class User(BaseModel):
-    employee_id = UUID.uuid1()
+    user_id = UUID.uuid1()
     username: str
     password: str
     email: str | None = None
@@ -46,11 +36,6 @@ class User(BaseModel):
 
 class UserInDB(User):
     hashed_password: str
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
 
 
 class TokenData(BaseModel):
@@ -116,7 +101,9 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
-async def get_current_active_user(current_user: Annotated[User, Depends(get_current_user)]):
+async def get_current_active_user(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
     if current_user.disabled:
         raise user_not_found
     return current_user
