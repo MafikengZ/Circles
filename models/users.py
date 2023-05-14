@@ -61,7 +61,7 @@ async def verify_password(password: str, hash_passport: str):
 
 # Get user and authenticate
 async def authenticate_user(db, username: str, password: str):
-    """authenticate and return a user."""
+    """authenticate and return a user"""
     user = get_user(db, username=username)
     if not user:
         return False
@@ -83,27 +83,28 @@ async def create_access_token(data: dict, expires_delta: timedelta | None = None
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    """Update get_current_user to receive the same token as before, but this time,using JWT tokens.
-    Decode the received token, verify it, and return the current user.
-    If the token is invalid, return an HTTP error right away."""
+    """Func Updates get_current_user to receive the same token as before, but this time,using JWT tokens.
+        Decode the received token, verify it, and return the current user.
+        If the token is invalid, return an HTTP error right away.
+    """
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
-            raise credentials_exception
+            raise credentials_not_validated
         token_data = TokenData(username=username)
     except JWTError:
-        raise credentials_exception
+        raise credentials_not_validated
     user = get_user(db, username=token_data.username)
     if user is None:
-        raise credentials_exception
+        raise credentials_not_validated
     return user
 
 
 async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)]
+current_user: Annotated[User, Depends(get_current_user)]
 ):
     if current_user.disabled:
-        raise user_not_found
+        raise inactive_user
     return current_user

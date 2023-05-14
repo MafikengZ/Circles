@@ -1,15 +1,15 @@
 from fastapi import HTTPException, status
 
-credentials_exception = HTTPException(
+credentials_not_validated = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-invalid_credentials = HTTPException(
+credentials_invalid = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-user_not_found = HTTPException(status_code=400, detail="Inactive user")
+inactive_user = HTTPException(status_code=400, detail="Inactive user")
